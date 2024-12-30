@@ -186,9 +186,10 @@ exports[`WebsiteFrontendServiceStack creates the expected CloudFormation templat
       "Type": "AWS::IAM::Role",
       "UpdateReplacePolicy": "Retain",
     },
-    "WebsiteFrontendApiGatewayDeploymentD6828838fd9e62fa7d83a82237b33527ce447cb2": {
+    "WebsiteFrontendApiGatewayDeploymentD682883839f1ff07c38736184c0bcb0220e6deec": {
       "DependsOn": [
         "WebsiteFrontendApiGatewayproxyANYFDD92D5F",
+        "WebsiteFrontendApiGatewayproxyOPTIONSE74134C4",
         "WebsiteFrontendApiGatewayproxy8040BF24",
       ],
       "Properties": {
@@ -205,7 +206,7 @@ exports[`WebsiteFrontendServiceStack creates the expected CloudFormation templat
       ],
       "Properties": {
         "DeploymentId": {
-          "Ref": "WebsiteFrontendApiGatewayDeploymentD6828838fd9e62fa7d83a82237b33527ce447cb2",
+          "Ref": "WebsiteFrontendApiGatewayDeploymentD682883839f1ff07c38736184c0bcb0220e6deec",
         },
         "RestApiId": {
           "Ref": "WebsiteFrontendApiGateway892EDA80",
@@ -311,6 +312,124 @@ exports[`WebsiteFrontendServiceStack creates the expected CloudFormation templat
       "Properties": {
         "AuthorizationType": "NONE",
         "HttpMethod": "ANY",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "WebsiteFrontendLambdaB76C5B1A",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": {
+          "Ref": "WebsiteFrontendApiGatewayproxy8040BF24",
+        },
+        "RestApiId": {
+          "Ref": "WebsiteFrontendApiGateway892EDA80",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "WebsiteFrontendApiGatewayproxyOPTIONSApiPermissionTestWebsiteFrontendServiceStackWebsiteFrontendApiGatewayD15A1EDAOPTIONSproxyCD0FBD9F": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "WebsiteFrontendLambdaB76C5B1A",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              {
+                "Ref": "WebsiteFrontendApiGateway892EDA80",
+              },
+              "/test-invoke-stage/OPTIONS/*",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "WebsiteFrontendApiGatewayproxyOPTIONSApiPermissionWebsiteFrontendServiceStackWebsiteFrontendApiGatewayD15A1EDAOPTIONSproxyBFB58929": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "WebsiteFrontendLambdaB76C5B1A",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              {
+                "Ref": "WebsiteFrontendApiGateway892EDA80",
+              },
+              "/",
+              {
+                "Ref": "WebsiteFrontendApiGatewayDeploymentStageprod61685C8A",
+              },
+              "/OPTIONS/*",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "WebsiteFrontendApiGatewayproxyOPTIONSE74134C4": {
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
         "Integration": {
           "IntegrationHttpMethod": "POST",
           "Type": "AWS_PROXY",

@@ -47,6 +47,8 @@ export class WebsiteFrontendServiceStack extends Stack {
 
     const apiResource = api.root.addResource('{proxy+}');
     apiResource.addMethod('ANY', new LambdaIntegration(lambdaFunction));
+    // Handle CORS preflight requests
+    apiResource.addMethod('OPTIONS');
 
     this.createCloudFormationOutputs(api);
   }
