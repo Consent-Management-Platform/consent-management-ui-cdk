@@ -1,7 +1,7 @@
 import { CfnOutput, Duration, Stack, StackProps } from 'aws-cdk-lib';
 import { LambdaIntegration, LambdaRestApi, RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Code, Function, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import * as path from 'path';
 
@@ -17,29 +17,60 @@ export class WebsiteFrontendServiceStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    // IAM role for the frontend Lambda function
-    this.lambdaRole = new Role(this, 'NextJsLambdaRole', {
+    // Lambda function which hosts the web app
+    this.lambdaRole = this.createLambdaRole();
+    const lambdaFunction: Function = this.createLambdaFunction(this.lambdaRole);
+
+    // API Gateway for Lambda integration
+    const api: RestApi = this.createRestApiGateway(lambdaFunction);
+
+    this.createCloudFormationOutputs(api);
+  }
+
+  // Creates IAM role for the frontend Lambda function
+  private createLambdaRole(): Role {
+    const lambdaRole: Role = new Role(this, 'NextJsLambdaRole', {
       assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
       managedPolicies: [
         ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
       ],
     });
-    this.lambdaRole.addToPolicy(new PolicyStatement({
+    lambdaRole.addToPolicy(new PolicyStatement({
       actions: ['s3:GetObject'],
       resources: [`arn:aws:s3:::${WEBSITE_STATIC_ASSETS_BUCKET_NAME_PREFIX}-${this.account}/*`],
     }));
+    return lambdaRole;
+  }
 
-    // Lambda function for server-side rendering
-    const lambdaFunction: Function = new Function(this, 'WebsiteFrontendLambda', {
+  // Creates the Lambda function that hosts the web app service code
+  private createLambdaFunction(lambdaRole: Role): Function {
+    // The AWS Lambda Adapter layer is used to run web apps in AWS Lambda.
+    // Ref: https://github.com/awslabs/aws-lambda-web-adapter
+    const lambdaAdapterLayer = LayerVersion.fromLayerVersionArn(
+      this,
+      'LambdaAdapterLayerX86',
+      `arn:aws:lambda:${this.region}:753240598075:layer:LambdaAdapterLayerX86:3`
+    );
+
+    return new Function(this, 'WebsiteFrontendLambda', {
       code: Code.fromAsset(path.join(__dirname, '../../../consent-management-ui/.next/standalone')),
-      handler: 'index.handler',
+      handler: 'run.sh',
       memorySize: 1024,
-      role: this.lambdaRole,
+      role: lambdaRole,
       runtime: Runtime.NODEJS_22_X,
       timeout: Duration.seconds(10),
+      // Environment variables used by AWS Lambda Adapter
+      environment: {
+        'AWS_LAMBDA_EXEC_WRAPPER': '/opt/bootstrap',
+        'RUST_LOG': 'info',
+        'PORT': '8080',
+      },
+      layers: [lambdaAdapterLayer],
     });
+  }
 
-    // API Gateway for Lambda integration
+  // Creates API Gateway for the web app
+  private createRestApiGateway(lambdaFunction: Function) {
     const api: RestApi = new LambdaRestApi(this, 'WebsiteFrontendApiGateway', {
       handler: lambdaFunction,
       proxy: false,
@@ -49,10 +80,10 @@ export class WebsiteFrontendServiceStack extends Stack {
     apiResource.addMethod('ANY', new LambdaIntegration(lambdaFunction));
     // Handle CORS preflight requests
     apiResource.addMethod('OPTIONS');
-
-    this.createCloudFormationOutputs(api);
+    return api;
   }
 
+  // Creates CloudFormation Outputs for other stacks to reference
   private createCloudFormationOutputs(api: RestApi): void {
     new CfnOutput(this, 'ApiGatewayURL', {
       description: 'Consent Management Website API Gateway URL',

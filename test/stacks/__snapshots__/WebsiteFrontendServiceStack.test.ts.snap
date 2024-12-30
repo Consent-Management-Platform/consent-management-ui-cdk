@@ -476,9 +476,30 @@ exports[`WebsiteFrontendServiceStack creates the expected CloudFormation templat
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "1ccfd1a7c52f80a9c15af9fe0f3fbc3f61cd56c6bf1bcd5b515b4ac2e736e10c.zip",
+          "S3Key": "b0fa91b7b030be6ddaf0e1dd82c6889f34f1e603ed89d38385325b792f8d8223.zip",
         },
-        "Handler": "index.handler",
+        "Environment": {
+          "Variables": {
+            "AWS_LAMBDA_EXEC_WRAPPER": "/opt/bootstrap",
+            "PORT": "8080",
+            "RUST_LOG": "info",
+          },
+        },
+        "Handler": "run.sh",
+        "Layers": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:lambda:",
+                {
+                  "Ref": "AWS::Region",
+                },
+                ":753240598075:layer:LambdaAdapterLayerX86:3",
+              ],
+            ],
+          },
+        ],
         "MemorySize": 1024,
         "Role": {
           "Fn::GetAtt": [

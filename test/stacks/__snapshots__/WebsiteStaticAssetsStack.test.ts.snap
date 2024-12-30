@@ -375,7 +375,7 @@ exports[`WebsiteStaticAssetsStack creates the expected CloudFormation template f
           },
         ],
         "SourceObjectKeys": [
-          "855d789249e5bfb79519551d165764195e591895cba06d3ed9ebb519ccbbe302.zip",
+          "97245d1106cf2b7d9c93c8e775ebd25a74bd8bcfe6104bc1f1c50484dcc2852d.zip",
         ],
       },
       "Type": "Custom::CDKBucketDeployment",
