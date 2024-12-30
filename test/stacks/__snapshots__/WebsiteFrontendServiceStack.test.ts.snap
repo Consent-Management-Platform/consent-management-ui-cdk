@@ -1,0 +1,404 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`WebsiteFrontendServiceStack creates the expected CloudFormation template from CDK 1`] = `
+{
+  "Outputs": {
+    "ApiGatewayURL": {
+      "Description": "Consent Management Website API Gateway URL",
+      "Export": {
+        "Name": "ConsentManagementWebsiteApiGatewayUrl",
+      },
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "WebsiteFrontendApiGateway892EDA80",
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region",
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix",
+            },
+            "/",
+            {
+              "Ref": "WebsiteFrontendApiGatewayDeploymentStageprod61685C8A",
+            },
+            "/",
+          ],
+        ],
+      },
+    },
+    "WebsiteFrontendApiGatewayEndpointF17CF1E0": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "WebsiteFrontendApiGateway892EDA80",
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region",
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix",
+            },
+            "/",
+            {
+              "Ref": "WebsiteFrontendApiGatewayDeploymentStageprod61685C8A",
+            },
+            "/",
+          ],
+        ],
+      },
+    },
+  },
+  "Parameters": {
+    "BootstrapVersion": {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": {
+    "NextJsLambdaRoleDefaultPolicyFDDD91CF": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::consent-mgmt-ui-static-assets-",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "NextJsLambdaRoleDefaultPolicyFDDD91CF",
+        "Roles": [
+          {
+            "Ref": "NextJsLambdaRoleE79333C3",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "NextJsLambdaRoleE79333C3": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "WebsiteFrontendApiGateway892EDA80": {
+      "Properties": {
+        "Name": "WebsiteFrontendApiGateway",
+      },
+      "Type": "AWS::ApiGateway::RestApi",
+    },
+    "WebsiteFrontendApiGatewayAccount28CBB24A": {
+      "DeletionPolicy": "Retain",
+      "DependsOn": [
+        "WebsiteFrontendApiGateway892EDA80",
+      ],
+      "Properties": {
+        "CloudWatchRoleArn": {
+          "Fn::GetAtt": [
+            "WebsiteFrontendApiGatewayCloudWatchRole2ADDFBB4",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::ApiGateway::Account",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "WebsiteFrontendApiGatewayCloudWatchRole2ADDFBB4": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "apigateway.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "WebsiteFrontendApiGatewayDeploymentD6828838fd9e62fa7d83a82237b33527ce447cb2": {
+      "DependsOn": [
+        "WebsiteFrontendApiGatewayproxyANYFDD92D5F",
+        "WebsiteFrontendApiGatewayproxy8040BF24",
+      ],
+      "Properties": {
+        "Description": "Automatically created by the RestApi construct",
+        "RestApiId": {
+          "Ref": "WebsiteFrontendApiGateway892EDA80",
+        },
+      },
+      "Type": "AWS::ApiGateway::Deployment",
+    },
+    "WebsiteFrontendApiGatewayDeploymentStageprod61685C8A": {
+      "DependsOn": [
+        "WebsiteFrontendApiGatewayAccount28CBB24A",
+      ],
+      "Properties": {
+        "DeploymentId": {
+          "Ref": "WebsiteFrontendApiGatewayDeploymentD6828838fd9e62fa7d83a82237b33527ce447cb2",
+        },
+        "RestApiId": {
+          "Ref": "WebsiteFrontendApiGateway892EDA80",
+        },
+        "StageName": "prod",
+      },
+      "Type": "AWS::ApiGateway::Stage",
+    },
+    "WebsiteFrontendApiGatewayproxy8040BF24": {
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "WebsiteFrontendApiGateway892EDA80",
+            "RootResourceId",
+          ],
+        },
+        "PathPart": "{proxy+}",
+        "RestApiId": {
+          "Ref": "WebsiteFrontendApiGateway892EDA80",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "WebsiteFrontendApiGatewayproxyANYApiPermissionTestWebsiteFrontendServiceStackWebsiteFrontendApiGatewayD15A1EDAANYproxy2891D204": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "WebsiteFrontendLambdaB76C5B1A",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              {
+                "Ref": "WebsiteFrontendApiGateway892EDA80",
+              },
+              "/test-invoke-stage/*/*",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "WebsiteFrontendApiGatewayproxyANYApiPermissionWebsiteFrontendServiceStackWebsiteFrontendApiGatewayD15A1EDAANYproxyF3A5F8E0": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "WebsiteFrontendLambdaB76C5B1A",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              {
+                "Ref": "WebsiteFrontendApiGateway892EDA80",
+              },
+              "/",
+              {
+                "Ref": "WebsiteFrontendApiGatewayDeploymentStageprod61685C8A",
+              },
+              "/*/*",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "WebsiteFrontendApiGatewayproxyANYFDD92D5F": {
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "ANY",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "WebsiteFrontendLambdaB76C5B1A",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": {
+          "Ref": "WebsiteFrontendApiGatewayproxy8040BF24",
+        },
+        "RestApiId": {
+          "Ref": "WebsiteFrontendApiGateway892EDA80",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "WebsiteFrontendLambdaB76C5B1A": {
+      "DependsOn": [
+        "NextJsLambdaRoleDefaultPolicyFDDD91CF",
+        "NextJsLambdaRoleE79333C3",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "1ccfd1a7c52f80a9c15af9fe0f3fbc3f61cd56c6bf1bcd5b515b4ac2e736e10c.zip",
+        },
+        "Handler": "index.handler",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "NextJsLambdaRoleE79333C3",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs22.x",
+        "Timeout": 10,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;
