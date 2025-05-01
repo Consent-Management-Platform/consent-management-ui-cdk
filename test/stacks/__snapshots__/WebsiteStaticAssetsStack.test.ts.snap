@@ -180,7 +180,6 @@ exports[`WebsiteStaticAssetsStack creates the expected CloudFormation template f
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "c6358465bf49dfae556bb430bf9c81fa578c221b82c308e3707901b1dd654762.zip",
         },
         "Environment": {
           "Variables": {
@@ -343,7 +342,6 @@ exports[`WebsiteStaticAssetsStack creates the expected CloudFormation template f
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "eca08244dd0727ae49261c134b3a0bbe699e9aca09f4b520ca9618adcde5c3fb.zip",
         },
         "Description": "/opt/awscli/aws",
       },
