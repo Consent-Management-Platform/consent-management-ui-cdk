@@ -472,6 +472,9 @@ exports[`WebsiteFrontendServiceStack creates the expected CloudFormation templat
         "NextJsLambdaRoleE79333C3",
       ],
       "Properties": {
+        "Architectures": [
+          "arm64",
+        ],
         "Code": {
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
@@ -494,7 +497,7 @@ exports[`WebsiteFrontendServiceStack creates the expected CloudFormation templat
                 {
                   "Ref": "AWS::Region",
                 },
-                ":753240598075:layer:LambdaAdapterLayerX86:3",
+                ":753240598075:layer:LambdaAdapterLayerArm64:25",
               ],
             ],
           },

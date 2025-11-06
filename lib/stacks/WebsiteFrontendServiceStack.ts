@@ -1,7 +1,7 @@
 import { CfnOutput, Duration, Stack, StackProps } from 'aws-cdk-lib';
 import { LambdaIntegration, LambdaRestApi, RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { Code, Function, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Architecture, Code, Function, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import * as path from 'path';
 
@@ -48,11 +48,12 @@ export class WebsiteFrontendServiceStack extends Stack {
     // Ref: https://github.com/awslabs/aws-lambda-web-adapter
     const lambdaAdapterLayer = LayerVersion.fromLayerVersionArn(
       this,
-      'LambdaAdapterLayerX86',
-      `arn:aws:lambda:${this.region}:753240598075:layer:LambdaAdapterLayerX86:3`
+      'LambdaWebAdapterLayer',
+      `arn:aws:lambda:${this.region}:753240598075:layer:LambdaAdapterLayerArm64:25`
     );
 
     return new Function(this, 'WebsiteFrontendLambda', {
+      architecture: Architecture.ARM_64,
       code: Code.fromAsset(path.join(__dirname, '../../../consent-management-ui/.next/standalone')),
       handler: 'run.sh',
       memorySize: 1024,
