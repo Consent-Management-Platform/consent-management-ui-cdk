@@ -476,7 +476,6 @@ exports[`WebsiteFrontendServiceStack creates the expected CloudFormation templat
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "dc2c82ec6b2e0622b8098f50d8f3cfd03c435ad8a3d6cc1a164f5114116c6783.zip",
         },
         "Environment": {
           "Variables": {

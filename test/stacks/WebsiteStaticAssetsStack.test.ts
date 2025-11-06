@@ -12,14 +12,17 @@ describe('WebsiteStaticAssetsStack', () => {
     const PROPERTIES_KEY = 'Properties';
     const RESOURCES_KEY = 'Resources';
     const S3KEY_KEY = 'S3Key';
+    const SOURCE_OBJECT_KEYS_KEY = 'SourceObjectKeys';
 
-    // Normalize S3Key values that change independently of CDK code changes
     for (const resourceKey in templateJson[RESOURCES_KEY]) {
       if (resourceKey.startsWith('CustomCDKBucketDeployment') &&
           templateJson[RESOURCES_KEY][resourceKey][PROPERTIES_KEY][CODE_KEY]) {
         delete templateJson[RESOURCES_KEY][resourceKey][PROPERTIES_KEY][CODE_KEY][S3KEY_KEY];
       } else if (resourceKey.startsWith('DeployStaticWebsiteAssetsAwsCli')) {
         delete templateJson[RESOURCES_KEY][resourceKey][PROPERTIES_KEY][CONTENT_KEY][S3KEY_KEY];
+      } else if (resourceKey.startsWith('DeployStaticWebsiteAssetsCustomResource') &&
+          templateJson[RESOURCES_KEY][resourceKey][PROPERTIES_KEY][SOURCE_OBJECT_KEYS_KEY]) {
+        delete templateJson[RESOURCES_KEY][resourceKey][PROPERTIES_KEY][SOURCE_OBJECT_KEYS_KEY];
       }
     }
   }

@@ -372,9 +372,6 @@ exports[`WebsiteStaticAssetsStack creates the expected CloudFormation template f
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
         ],
-        "SourceObjectKeys": [
-          "61cc6a1f31005ac74d7c3e3aa0561686e1270f1fc4061e95818baa87bf5ca9f6.zip",
-        ],
       },
       "Type": "Custom::CDKBucketDeployment",
       "UpdateReplacePolicy": "Delete",
