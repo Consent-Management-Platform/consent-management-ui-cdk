@@ -95,10 +95,20 @@ export class WebsiteStack extends Stack {
     const api: RestApi = new LambdaRestApi(this, 'WebsiteFrontendApiGateway', {
       handler: lambdaFunction,
       proxy: false,
+      deployOptions: {
+        // By default, limit incoming traffic to 5 requests/second
+        throttlingRateLimit: 5,
+        // Allow bursts of up to 10 requests/second
+        throttlingBurstLimit: 10,
+      },
     });
 
+    const lambdaIntegration = new LambdaIntegration(lambdaFunction);
+    // Pass base '/' path requests to the Lambda function
+    api.root.addMethod('ANY', lambdaIntegration);
+    // Pass requests to all other paths to the Lambda function
     const apiResource = api.root.addResource('{proxy+}');
-    apiResource.addMethod('ANY', new LambdaIntegration(lambdaFunction));
+    apiResource.addMethod('ANY', lambdaIntegration);
     // Handle CORS preflight requests
     apiResource.addMethod('OPTIONS');
     return api;
