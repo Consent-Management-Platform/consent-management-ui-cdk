@@ -101,13 +101,10 @@ exports[`WebsiteStack creates the expected CloudFormation template from CDK 1`] 
         },
         "Tags": [
           {
-            "Key": "aws-cdk:cr-owned:a1d90bf8",
+            "Key": "aws-cdk:cr-owned:_next/static:a1d90bf8",
             "Value": "true",
           },
         ],
-        "WebsiteConfiguration": {
-          "IndexDocument": "index.html",
-        },
       },
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
@@ -410,12 +407,16 @@ exports[`WebsiteStack creates the expected CloudFormation template from CDK 1`] 
     "DeployStaticWebsiteAssetsCustomResource1024MiB0198217A": {
       "DeletionPolicy": "Delete",
       "Properties": {
+        "DestinationBucketKeyPrefix": "_next/static",
         "DestinationBucketName": {
           "Ref": "ConsentManagementWebsiteStaticAssetsBucketBBA0DEF7",
         },
         "DistributionId": {
           "Ref": "WebsiteCloudFrontDistribution12928E08",
         },
+        "DistributionPaths": [
+          "/_next/static/*",
+        ],
         "OutputObjectKeys": true,
         "Prune": true,
         "ServiceToken": {
@@ -504,21 +505,20 @@ exports[`WebsiteStack creates the expected CloudFormation template from CDK 1`] 
             {
               "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
               "Compress": true,
-              "PathPattern": "/_next/*",
-              "TargetOriginId": "WebsiteStackWebsiteCloudFrontDistributionOrigin103F0610C",
+              "PathPattern": "/_next/static/*",
+              "TargetOriginId": "WebsiteStackWebsiteCloudFrontDistributionOrigin2FA15D695",
               "ViewerProtocolPolicy": "redirect-to-https",
             },
             {
-              "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+              "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
               "Compress": true,
-              "OriginRequestPolicyId": "216adef6-5c7f-47e4-b989-5492eafa07d3",
-              "PathPattern": "api/*",
+              "PathPattern": "static/*",
               "TargetOriginId": "WebsiteStackWebsiteCloudFrontDistributionOrigin2FA15D695",
-              "ViewerProtocolPolicy": "allow-all",
+              "ViewerProtocolPolicy": "redirect-to-https",
             },
           ],
           "DefaultCacheBehavior": {
-            "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+            "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
             "Compress": true,
             "TargetOriginId": "WebsiteStackWebsiteCloudFrontDistributionOrigin103F0610C",
             "ViewerProtocolPolicy": "redirect-to-https",
@@ -527,24 +527,6 @@ exports[`WebsiteStack creates the expected CloudFormation template from CDK 1`] 
           "HttpVersion": "http2",
           "IPV6Enabled": true,
           "Origins": [
-            {
-              "DomainName": {
-                "Fn::GetAtt": [
-                  "ConsentManagementWebsiteStaticAssetsBucketBBA0DEF7",
-                  "RegionalDomainName",
-                ],
-              },
-              "Id": "WebsiteStackWebsiteCloudFrontDistributionOrigin103F0610C",
-              "OriginAccessControlId": {
-                "Fn::GetAtt": [
-                  "WebsiteCloudFrontDistributionOrigin1S3OriginAccessControl2936164D",
-                  "Id",
-                ],
-              },
-              "S3OriginConfig": {
-                "OriginAccessIdentity": "",
-              },
-            },
             {
               "CustomOriginConfig": {
                 "OriginProtocolPolicy": "https-only",
@@ -559,23 +541,104 @@ exports[`WebsiteStack creates the expected CloudFormation template from CDK 1`] 
                     "Fn::Split": [
                       "/",
                       {
-                        "Fn::ImportValue": "ConsentManagementWebsiteApiGatewayUrl",
+                        "Fn::Join": [
+                          "",
+                          [
+                            "https://",
+                            {
+                              "Ref": "WebsiteFrontendApiGateway892EDA80",
+                            },
+                            ".execute-api.",
+                            {
+                              "Ref": "AWS::Region",
+                            },
+                            ".",
+                            {
+                              "Ref": "AWS::URLSuffix",
+                            },
+                            "/",
+                            {
+                              "Ref": "WebsiteFrontendApiGatewayDeploymentStageprod61685C8A",
+                            },
+                            "/",
+                          ],
+                        ],
                       },
                     ],
                   },
                 ],
               },
+              "Id": "WebsiteStackWebsiteCloudFrontDistributionOrigin103F0610C",
+              "OriginPath": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "/",
+                    {
+                      "Fn::Select": [
+                        3,
+                        {
+                          "Fn::Split": [
+                            "/",
+                            {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "https://",
+                                  {
+                                    "Ref": "WebsiteFrontendApiGateway892EDA80",
+                                  },
+                                  ".execute-api.",
+                                  {
+                                    "Ref": "AWS::Region",
+                                  },
+                                  ".",
+                                  {
+                                    "Ref": "AWS::URLSuffix",
+                                  },
+                                  "/",
+                                  {
+                                    "Ref": "WebsiteFrontendApiGatewayDeploymentStageprod61685C8A",
+                                  },
+                                  "/",
+                                ],
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                ],
+              },
+            },
+            {
+              "DomainName": {
+                "Fn::GetAtt": [
+                  "ConsentManagementWebsiteStaticAssetsBucketBBA0DEF7",
+                  "RegionalDomainName",
+                ],
+              },
               "Id": "WebsiteStackWebsiteCloudFrontDistributionOrigin2FA15D695",
+              "OriginAccessControlId": {
+                "Fn::GetAtt": [
+                  "WebsiteCloudFrontDistributionOrigin2S3OriginAccessControl57613894",
+                  "Id",
+                ],
+              },
+              "S3OriginConfig": {
+                "OriginAccessIdentity": "",
+              },
             },
           ],
         },
       },
       "Type": "AWS::CloudFront::Distribution",
     },
-    "WebsiteCloudFrontDistributionOrigin1S3OriginAccessControl2936164D": {
+    "WebsiteCloudFrontDistributionOrigin2S3OriginAccessControl57613894": {
       "Properties": {
         "OriginAccessControlConfig": {
-          "Name": "WebsiteStackWebsiteCloudFronOrigin1S3OriginAccessControl6B1D7406",
+          "Name": "WebsiteStackWebsiteCloudFronOrigin2S3OriginAccessControlDFF36CFC",
           "OriginAccessControlOriginType": "s3",
           "SigningBehavior": "always",
           "SigningProtocol": "sigv4",

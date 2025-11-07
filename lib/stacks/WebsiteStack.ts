@@ -1,7 +1,7 @@
-import { CfnOutput, Duration, Fn, Stack, StackProps } from 'aws-cdk-lib';
+import { CfnOutput, Duration, Stack, StackProps } from 'aws-cdk-lib';
 import { LambdaIntegration, LambdaRestApi, RestApi } from 'aws-cdk-lib/aws-apigateway';
-import { BehaviorOptions, CachePolicy, Distribution, OriginRequestPolicy, ViewerProtocolPolicy } from 'aws-cdk-lib/aws-cloudfront';
-import { HttpOrigin, S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
+import { BehaviorOptions, CachePolicy, Distribution, ViewerProtocolPolicy } from 'aws-cdk-lib/aws-cloudfront';
+import { RestApiOrigin, S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { ArnPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Architecture, Code, Function, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { BlockPublicAccess, Bucket } from 'aws-cdk-lib/aws-s3';
@@ -34,13 +34,15 @@ export class WebsiteStack extends Stack {
 
     this.staticAssetsBucket= this.createStaticAssetsBucket();
 
-    this.cloudFrontDistribution = this.createCloudFrontDistribution();
+    this.cloudFrontDistribution = this.createCloudFrontDistribution(api);
 
     // Deploy static assets from the Next.js app to the S3 bucket
     new BucketDeployment(this, 'DeployStaticWebsiteAssets', {
       sources: [Source.asset('../consent-management-ui/.next/static')],
       destinationBucket: this.staticAssetsBucket,
+      destinationKeyPrefix: '_next/static',
       distribution: this.cloudFrontDistribution,
+      distributionPaths: ['/_next/static/*'],
       memoryLimit: 1024,
     });
   }
@@ -89,7 +91,7 @@ export class WebsiteStack extends Stack {
   }
 
   // Creates API Gateway for the web app
-  private createRestApiGateway(lambdaFunction: Function) {
+  private createRestApiGateway(lambdaFunction: Function): RestApi {
     const api: RestApi = new LambdaRestApi(this, 'WebsiteFrontendApiGateway', {
       handler: lambdaFunction,
       proxy: false,
@@ -116,7 +118,6 @@ export class WebsiteStack extends Stack {
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       enforceSSL: true,
       bucketName: `${WEBSITE_STATIC_ASSETS_BUCKET_NAME_PREFIX}-${this.account}`,
-      websiteIndexDocument: 'index.html',
     });
 
     // Add bucket policy to allow the website's Lambda function to access the bucket
@@ -129,28 +130,22 @@ export class WebsiteStack extends Stack {
     return staticAssetsBucket;
   }
 
-  private createCloudFrontDistribution(): Distribution {
+  private createCloudFrontDistribution(api: RestApi): Distribution {
     const staticAssetsBehaviour: BehaviorOptions = {
+      cachePolicy: CachePolicy.CACHING_OPTIMIZED,
       origin: S3BucketOrigin.withOriginAccessControl(this.staticAssetsBucket),
       viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
     };
 
-    const apiUrl = Fn.importValue(CFN_OUTPUT_API_GATEWAY_URL);
-    // Directly using the API Gateway URL results in a
-    // "Invalid request provided: AWS::CloudFront::Distribution: The parameter origin name cannot contain a colon."
-    // error, so we need to extract the domain name from the URL.
-    // Ref: https://stackoverflow.com/a/72010828
-    const parsedApiUrl = Fn.select(2, Fn.split('/', apiUrl));
-
     const cloudFrontDistribution = new Distribution(this, 'WebsiteCloudFrontDistribution', {
-      defaultBehavior: staticAssetsBehaviour,
+      defaultBehavior: {
+        cachePolicy: CachePolicy.CACHING_DISABLED,
+        origin: new RestApiOrigin(api),
+        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      },
       additionalBehaviors: {
-        '/_next/*': staticAssetsBehaviour,
-        'api/*': {
-          origin: new HttpOrigin(parsedApiUrl),
-          cachePolicy: CachePolicy.CACHING_DISABLED,
-          originRequestPolicy: OriginRequestPolicy.ALL_VIEWER,
-        }
+        '/_next/static/*': staticAssetsBehaviour,
+        'static/*': staticAssetsBehaviour,
       },
     });
 
