@@ -37,7 +37,11 @@ Steps to build and deploy CDK stacks:
 * Run `ls cdk.out` and validate that the project's stacks have assets and template JSON files generated in this folder, eg. `ConsentManagementWebsiteStack.template.json`.
 * Run `npx cdk bootstrap` to deploy a CDKToolkit CloudFormation stack to your account with prerequisites to deploying CDK applications, validate succeeds.
 * Run `npx cdk deploy <ENTER_STACK_NAME_HERE>` to deploy a given stack to your dev account.  Examples below:
-  * `npx cdk deploy ConsentManagementWebsiteStack`
+
+```sh
+npx cdk deploy ConsentManagementAuthStack && \
+npx cdk deploy ConsentManagementWebsiteStack
+```
 
 ### Updating stack snapshots
 

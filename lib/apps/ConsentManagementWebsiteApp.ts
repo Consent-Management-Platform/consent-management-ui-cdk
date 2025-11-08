@@ -1,17 +1,24 @@
-import { App } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 
+import { AuthStack } from '../stacks/AuthStack';
 import { WebsiteStack } from '../stacks/WebsiteStack';
 
 const CONSENT_DEMO_WEBSITE_SERVICE_NAME = 'consent-demo-website';
 const SERVICE_TAG_NAME = 'service';
-const STACK_TAG_NAME = 'stack';
 
 export class ConsentManagementWebsiteApp extends App {
   constructor() {
     super();
 
-    const websiteStack = new WebsiteStack(this, 'ConsentManagementWebsiteStack');
-    websiteStack.addStackTag(SERVICE_TAG_NAME, CONSENT_DEMO_WEBSITE_SERVICE_NAME);
-    websiteStack.addStackTag(STACK_TAG_NAME, websiteStack.stackName);
+    const authStack = new AuthStack(this, 'ConsentManagementAuthStack');
+    const websiteStack = new WebsiteStack(this, 'ConsentManagementWebsiteStack', {
+      authClientId: authStack.authClientId,
+      authUserPoolProviderUrl: authStack.authUserPoolProviderUrl,
+    });
+
+    const stacks: Stack[] = [authStack, websiteStack];
+    stacks.forEach((stack) => {
+      stack.addStackTag(SERVICE_TAG_NAME, CONSENT_DEMO_WEBSITE_SERVICE_NAME);
+    });
   }
 }

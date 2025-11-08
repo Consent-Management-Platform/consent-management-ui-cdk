@@ -1,0 +1,191 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AuthStack creates the expected CloudFormation template from CDK 1`] = `
+{
+  "Parameters": {
+    "BootstrapVersion": {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": {
+    "WebsiteUserPoolClient0EC7A8CE": {
+      "Properties": {
+        "AccessTokenValidity": 15,
+        "AllowedOAuthFlows": [
+          "implicit",
+          "code",
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": [
+          "profile",
+          "phone",
+          "email",
+          "openid",
+          "aws.cognito.signin.user.admin",
+        ],
+        "AuthSessionValidity": 15,
+        "CallbackURLs": [
+          "https://example.com",
+        ],
+        "EnableTokenRevocation": true,
+        "ExplicitAuthFlows": [
+          "ALLOW_USER_AUTH",
+          "ALLOW_REFRESH_TOKEN_AUTH",
+        ],
+        "IdTokenValidity": 360,
+        "PreventUserExistenceErrors": "ENABLED",
+        "ReadAttributes": [
+          "custom:isAdmin",
+          "email",
+          "email_verified",
+          "phone_number",
+          "phone_number_verified",
+        ],
+        "SupportedIdentityProviders": [
+          "COGNITO",
+        ],
+        "TokenValidityUnits": {
+          "AccessToken": "minutes",
+          "IdToken": "minutes",
+        },
+        "UserPoolId": {
+          "Ref": "WebsiteUserPoolE514E855",
+        },
+        "WriteAttributes": [
+          "custom:isAdmin",
+          "email",
+          "phone_number",
+        ],
+      },
+      "Type": "AWS::Cognito::UserPoolClient",
+    },
+    "WebsiteUserPoolE514E855": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AccountRecoverySetting": {
+          "RecoveryMechanisms": [
+            {
+              "Name": "verified_email",
+              "Priority": 1,
+            },
+            {
+              "Name": "verified_phone_number",
+              "Priority": 2,
+            },
+          ],
+        },
+        "AdminCreateUserConfig": {
+          "AllowAdminCreateUserOnly": true,
+        },
+        "AutoVerifiedAttributes": [
+          "email",
+        ],
+        "EmailVerificationMessage": "The verification code to your new account is {####}",
+        "EmailVerificationSubject": "Verify your new account",
+        "EnabledMfas": [
+          "SMS_MFA",
+          "SOFTWARE_TOKEN_MFA",
+        ],
+        "MfaConfiguration": "ON",
+        "Schema": [
+          {
+            "AttributeDataType": "String",
+            "Mutable": true,
+            "Name": "isAdmin",
+          },
+        ],
+        "SmsAuthenticationMessage": "This code will let you log into the Consent Management portal: {####}.",
+        "SmsConfiguration": {
+          "ExternalId": "AuthStackWebsiteUserPoolEA6F5D23",
+          "SnsCallerArn": {
+            "Fn::GetAtt": [
+              "WebsiteUserPoolsmsRoleC7CFB471",
+              "Arn",
+            ],
+          },
+        },
+        "SmsVerificationMessage": "The verification code to your new account is {####}",
+        "UserPoolName": "ConsentManagementUsers",
+        "UserPoolTier": "ESSENTIALS",
+        "UsernameAttributes": [
+          "email",
+        ],
+        "VerificationMessageTemplate": {
+          "DefaultEmailOption": "CONFIRM_WITH_CODE",
+          "EmailMessage": "The verification code to your new account is {####}",
+          "EmailSubject": "Verify your new account",
+          "SmsMessage": "The verification code to your new account is {####}",
+        },
+      },
+      "Type": "AWS::Cognito::UserPool",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "WebsiteUserPoolsmsRoleC7CFB471": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Condition": {
+                "StringEquals": {
+                  "sts:ExternalId": "AuthStackWebsiteUserPoolEA6F5D23",
+                },
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "cognito-idp.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": "sns:Publish",
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "sns-publish",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;

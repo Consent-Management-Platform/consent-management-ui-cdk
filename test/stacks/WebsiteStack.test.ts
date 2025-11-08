@@ -1,5 +1,7 @@
 import { App } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
+
+import { AuthStack } from '../../lib/stacks/AuthStack';
 import { WebsiteStack } from '../../lib/stacks/WebsiteStack';
 
 describe('WebsiteStack', () => {
@@ -34,8 +36,12 @@ describe('WebsiteStack', () => {
 
   it('creates the expected CloudFormation template from CDK', () => {
     const app = new App();
-    const stack = new WebsiteStack(app, 'WebsiteStack');
-    const templateJson = Template.fromStack(stack).toJSON();
+    const authStack = new AuthStack(app, 'AuthStack');
+    const websiteStack = new WebsiteStack(app, 'WebsiteStack', {
+      authClientId: authStack.authClientId,
+      authUserPoolProviderUrl: authStack.authUserPoolProviderUrl,
+    });
+    const templateJson = Template.fromStack(websiteStack).toJSON();
     cleanDynamicResources(templateJson);
     expect(templateJson).toMatchSnapshot();
   });

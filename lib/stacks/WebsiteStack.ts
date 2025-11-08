@@ -3,7 +3,7 @@ import { LambdaIntegration, LambdaRestApi, RestApi } from 'aws-cdk-lib/aws-apiga
 import { BehaviorOptions, CachePolicy, Distribution, ViewerProtocolPolicy } from 'aws-cdk-lib/aws-cloudfront';
 import { RestApiOrigin, S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { ArnPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { Architecture, Code, Function, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Architecture, Code, Function, FunctionOptions, FunctionProps, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { BlockPublicAccess, Bucket } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
@@ -11,6 +11,11 @@ import * as path from 'path';
 
 import { CFN_OUTPUT_API_GATEWAY_URL, CFN_OUTPUT_CLOUDFRONT_URL } from '../constants/cloudformationOutputs';
 import { WEBSITE_STATIC_ASSETS_BUCKET_NAME_PREFIX } from '../constants/s3';
+
+export interface WebsiteStackProps extends StackProps {
+  authClientId: string;
+  authUserPoolProviderUrl: string;
+}
 
 /**
  * Defines the website infrastructure.
@@ -20,12 +25,15 @@ export class WebsiteStack extends Stack {
   private readonly staticAssetsBucket: Bucket;
   private readonly cloudFrontDistribution: Distribution;
 
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  constructor(scope: Construct, id: string, readonly props: WebsiteStackProps) {
     super(scope, id, props);
 
     // Lambda function which hosts the web app
     this.lambdaRole = this.createLambdaRole();
-    const lambdaFunction: Function = this.createLambdaFunction(this.lambdaRole);
+    const lambdaFunction: Function = this.createLambdaFunction(this.lambdaRole, {
+      AUTH_CLIENT_ID: this.props.authClientId,
+      AUTH_USER_POOL_PROVIDER_URL: this.props.authUserPoolProviderUrl,
+    });
 
     // API Gateway for Lambda integration
     const api: RestApi = this.createRestApiGateway(lambdaFunction);
@@ -63,7 +71,7 @@ export class WebsiteStack extends Stack {
   }
 
   // Creates the Lambda function that hosts the web app service code
-  private createLambdaFunction(lambdaRole: Role): Function {
+  private createLambdaFunction(lambdaRole: Role, customEnv: { [key: string]: string }): Function {
     // The AWS Lambda Adapter layer is used to run web apps in AWS Lambda.
     // Ref: https://github.com/awslabs/aws-lambda-web-adapter
     const lambdaAdapterLayer = LayerVersion.fromLayerVersionArn(
@@ -82,6 +90,7 @@ export class WebsiteStack extends Stack {
       timeout: Duration.seconds(10),
       // Environment variables used by AWS Lambda Adapter
       environment: {
+        ...customEnv,
         'AWS_LAMBDA_EXEC_WRAPPER': '/opt/bootstrap',
         'RUST_LOG': 'info',
         'PORT': '8080',
