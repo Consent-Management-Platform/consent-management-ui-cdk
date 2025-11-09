@@ -79,6 +79,103 @@ exports[`WebsiteStack creates the expected CloudFormation template from CDK 1`] 
     },
   },
   "Resources": {
+    "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
+      "DependsOn": [
+        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",
+        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "8d5e97812d0036272ba1fd5bb8772ff51f4712e58c75507e4a0db242bf680f1d.zip",
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs22.x",
+        "Timeout": 120,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "UpdateLambdaEnvLambda29C3B44D",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "UpdateLambdaEnvLambda29C3B44D",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",
+        "Roles": [
+          {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "ConsentManagementWebsiteStaticAssetsBucketBBA0DEF7": {
       "DeletionPolicy": "Retain",
       "Properties": {
@@ -498,6 +595,216 @@ exports[`WebsiteStack creates the expected CloudFormation template from CDK 1`] 
       },
       "Type": "AWS::IAM::Role",
     },
+    "UpdateLambdaEnvCustomResource2EB9E2CB": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "UpdateLambdaEnvCustomResourceCustomResourcePolicyE65D612A",
+      ],
+      "Properties": {
+        "Create": {
+          "Fn::Join": [
+            "",
+            [
+              "{"service":"Lambda","action":"invoke","parameters":{"FunctionName":"",
+              {
+                "Ref": "UpdateLambdaEnvLambda29C3B44D",
+              },
+              "","Payload":"{\\"ResourceProperties\\":{\\"FunctionName\\":\\"",
+              {
+                "Ref": "WebsiteFrontendLambdaB76C5B1A",
+              },
+              "\\",\\"CloudFrontDomainName\\":\\"",
+              {
+                "Fn::GetAtt": [
+                  "WebsiteCloudFrontDistribution12928E08",
+                  "DomainName",
+                ],
+              },
+              "\\"}}"},"physicalResourceId":{"id":"",
+              {
+                "Ref": "WebsiteFrontendLambdaB76C5B1A",
+              },
+              ""}}",
+            ],
+          ],
+        },
+        "InstallLatestAwsSdk": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn",
+          ],
+        },
+        "Update": {
+          "Fn::Join": [
+            "",
+            [
+              "{"service":"Lambda","action":"invoke","parameters":{"FunctionName":"",
+              {
+                "Ref": "UpdateLambdaEnvLambda29C3B44D",
+              },
+              "","Payload":"{\\"ResourceProperties\\":{\\"FunctionName\\":\\"",
+              {
+                "Ref": "WebsiteFrontendLambdaB76C5B1A",
+              },
+              "\\",\\"CloudFrontDomainName\\":\\"",
+              {
+                "Fn::GetAtt": [
+                  "WebsiteCloudFrontDistribution12928E08",
+                  "DomainName",
+                ],
+              },
+              "\\"}}"},"physicalResourceId":{"id":"",
+              {
+                "Ref": "WebsiteFrontendLambdaB76C5B1A",
+              },
+              ""}}",
+            ],
+          ],
+        },
+      },
+      "Type": "Custom::AWS",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "UpdateLambdaEnvCustomResourceCustomResourcePolicyE65D612A": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:Invoke",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "WebsiteFrontendLambdaB76C5B1A",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "UpdateLambdaEnvCustomResourceCustomResourcePolicyE65D612A",
+        "Roles": [
+          {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "UpdateLambdaEnvLambda29C3B44D": {
+      "DependsOn": [
+        "UpdateLambdaEnvLambdaServiceRoleDefaultPolicy92F5679C",
+        "UpdateLambdaEnvLambdaServiceRole009DA6FC",
+      ],
+      "Properties": {
+        "Architectures": [
+          "arm64",
+        ],
+        "Code": {
+          "ZipFile": "
+        const AWS = require('aws-sdk');
+        const lambda = new AWS.Lambda();
+
+        exports.handler = async (event) => {
+          const functionName = event.ResourceProperties.FunctionName;
+          const cloudFrontDomainName = event.ResourceProperties.CloudFrontDomainName;
+
+          try {
+            // Get the current environment variables
+            const config = await lambda.getFunctionConfiguration({ FunctionName: functionName }).promise();
+            const environment = config.Environment || { Variables: {} };
+
+            // Update the environment variables
+            environment.Variables['WEBSITE_DOMAIN_NAME'] = cloudFrontDomainName;
+
+            // Update the Lambda function configuration
+            await lambda.updateFunctionConfiguration({
+              FunctionName: functionName,
+              Environment: environment,
+            }).promise();
+
+            return { PhysicalResourceId: functionName };
+          } catch (error) {
+            console.error(error);
+            throw error;
+          }
+        };
+      ",
+        },
+        "FunctionName": "FrontendLambdaEnvUpdater",
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "UpdateLambdaEnvLambdaServiceRole009DA6FC",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs22.x",
+        "Timeout": 180,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "UpdateLambdaEnvLambdaServiceRole009DA6FC": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "UpdateLambdaEnvLambdaServiceRoleDefaultPolicy92F5679C": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "lambda:GetFunctionConfiguration",
+                "lambda:UpdateFunctionConfiguration",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "WebsiteFrontendLambdaB76C5B1A",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "UpdateLambdaEnvLambdaServiceRoleDefaultPolicy92F5679C",
+        "Roles": [
+          {
+            "Ref": "UpdateLambdaEnvLambdaServiceRole009DA6FC",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "WebsiteCloudFrontDistribution12928E08": {
       "Properties": {
         "DistributionConfig": {
@@ -822,7 +1129,7 @@ exports[`WebsiteStack creates the expected CloudFormation template from CDK 1`] 
       "Type": "AWS::IAM::Role",
       "UpdateReplacePolicy": "Retain",
     },
-    "WebsiteFrontendApiGatewayDeploymentD682883843102e5dc8f45953d52c44b79a5b880b": {
+    "WebsiteFrontendApiGatewayDeploymentD6828838070ba80be41b865f1a3387ea4ad4a709": {
       "DependsOn": [
         "WebsiteFrontendApiGatewayproxyANYFDD92D5F",
         "WebsiteFrontendApiGatewayproxyOPTIONSE74134C4",
@@ -843,7 +1150,7 @@ exports[`WebsiteStack creates the expected CloudFormation template from CDK 1`] 
       ],
       "Properties": {
         "DeploymentId": {
-          "Ref": "WebsiteFrontendApiGatewayDeploymentD682883843102e5dc8f45953d52c44b79a5b880b",
+          "Ref": "WebsiteFrontendApiGatewayDeploymentD6828838070ba80be41b865f1a3387ea4ad4a709",
         },
         "MethodSettings": [
           {
@@ -1137,8 +1444,10 @@ exports[`WebsiteStack creates the expected CloudFormation template from CDK 1`] 
             "AWS_LAMBDA_EXEC_WRAPPER": "/opt/bootstrap",
             "PORT": "8080",
             "RUST_LOG": "info",
+            "WEBSITE_DOMAIN_NAME": "PLACEHOLDER",
           },
         },
+        "FunctionName": "ConsentWebsiteFrontend",
         "Handler": "run.sh",
         "Layers": [
           {
