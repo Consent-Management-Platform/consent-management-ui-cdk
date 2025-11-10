@@ -7,6 +7,7 @@ import { Construct } from 'constructs';
  */
 export class AuthStack extends Stack {
   public readonly authClientId: string;
+  public readonly authUserPoolId: string;
   public readonly authUserPoolProviderUrl: string;
 
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -14,6 +15,7 @@ export class AuthStack extends Stack {
     const userPool = this.createCognitoUserPool();
     const userPoolClient = this.createCognitoUserPoolClient(userPool);
     this.authClientId = userPoolClient.userPoolClientId;
+    this.authUserPoolId = userPool.userPoolId;
     this.authUserPoolProviderUrl = userPool.userPoolProviderUrl;
   }
 
@@ -49,7 +51,11 @@ export class AuthStack extends Stack {
       accessTokenValidity: Duration.minutes(15),
       authFlows: {
         // Enable passwordless choice-based auth (one-time passcodes)
-        user: true
+        user: true,
+        // Enable standard password auth flow
+        userPassword: true,
+        // Enable SRP (Secure Remote Password) auth flow
+        userSrp: true,
       },
       authSessionValidity: Duration.minutes(15),
       enableTokenRevocation: true,

@@ -13,6 +13,7 @@ export class ConsentManagementWebsiteApp extends App {
     const authStack = new AuthStack(this, 'ConsentManagementAuthStack');
     const websiteStack = new WebsiteStack(this, 'ConsentManagementWebsiteStack', {
       authClientId: authStack.authClientId,
+      authUserPoolId: authStack.authUserPoolId,
       authUserPoolProviderUrl: authStack.authUserPoolProviderUrl,
     });
 

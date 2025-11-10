@@ -31,6 +31,8 @@ exports[`AuthStack creates the expected CloudFormation template from CDK 1`] = `
         ],
         "EnableTokenRevocation": true,
         "ExplicitAuthFlows": [
+          "ALLOW_USER_PASSWORD_AUTH",
+          "ALLOW_USER_SRP_AUTH",
           "ALLOW_USER_AUTH",
           "ALLOW_REFRESH_TOKEN_AUTH",
         ],

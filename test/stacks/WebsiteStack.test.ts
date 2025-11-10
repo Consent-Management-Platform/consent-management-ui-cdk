@@ -39,6 +39,7 @@ describe('WebsiteStack', () => {
     const authStack = new AuthStack(app, 'AuthStack');
     const websiteStack = new WebsiteStack(app, 'WebsiteStack', {
       authClientId: authStack.authClientId,
+      authUserPoolId: authStack.authUserPoolId,
       authUserPoolProviderUrl: authStack.authUserPoolProviderUrl,
     });
     const templateJson = Template.fromStack(websiteStack).toJSON();
