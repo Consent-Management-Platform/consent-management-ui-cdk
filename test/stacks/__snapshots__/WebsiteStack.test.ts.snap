@@ -1128,16 +1128,16 @@ exports[`WebsiteStack creates the expected CloudFormation template from CDK 1`] 
         },
         "Environment": {
           "Variables": {
-            "AUTH_CLIENT_ID": {
+            "AWS_LAMBDA_EXEC_WRAPPER": "/opt/bootstrap",
+            "NEXT_PUBLIC_AUTH_CLIENT_ID": {
               "Fn::ImportValue": "AuthStack:ExportsOutputRefWebsiteUserPoolClient0EC7A8CE71103CF7",
             },
-            "AUTH_USER_POOL_ID": {
+            "NEXT_PUBLIC_AUTH_USER_POOL_ID": {
               "Fn::ImportValue": "AuthStack:ExportsOutputRefWebsiteUserPoolE514E855984983A1",
             },
-            "AUTH_USER_POOL_PROVIDER_URL": {
+            "NEXT_PUBLIC_AUTH_USER_POOL_PROVIDER_URL": {
               "Fn::ImportValue": "AuthStack:ExportsOutputFnGetAttWebsiteUserPoolE514E855ProviderURL61F915A0",
             },
-            "AWS_LAMBDA_EXEC_WRAPPER": "/opt/bootstrap",
             "PORT": "8080",
             "RUST_LOG": "info",
           },

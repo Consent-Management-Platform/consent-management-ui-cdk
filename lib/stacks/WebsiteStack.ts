@@ -32,9 +32,9 @@ export class WebsiteStack extends Stack {
     // Lambda function which hosts the web app
     this.lambdaRole = this.createLambdaRole();
     const lambdaFunction: Function = this.createLambdaFunction(this.lambdaRole, {
-      AUTH_CLIENT_ID: this.props.authClientId,
-      AUTH_USER_POOL_ID: this.props.authUserPoolId,
-      AUTH_USER_POOL_PROVIDER_URL: this.props.authUserPoolProviderUrl,
+      NEXT_PUBLIC_AUTH_CLIENT_ID: this.props.authClientId,
+      NEXT_PUBLIC_AUTH_USER_POOL_ID: this.props.authUserPoolId,
+      NEXT_PUBLIC_AUTH_USER_POOL_PROVIDER_URL: this.props.authUserPoolProviderUrl,
     });
 
     // API Gateway for Lambda integration
