@@ -30,8 +30,11 @@ export class AuthStack extends Stack {
       mfa: Mfa.REQUIRED,
       // Ref: https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_cognito.UserPool.html#mfamessage
       mfaMessage: 'This code will let you log into the Consent Management portal: {####}.',
-      // Allow users to select between hardware/software one-time tokens or SMS for MFA
       mfaSecondFactor: {
+        // NOTE: Even though the CDK construct requires SMS to be enabled if OTP is enabled, in the website
+        // code we only enable OTP since authenticator apps are preferred over SMS for security reasons.
+        // We have not set up an SMS originator which incurs costs, or the SMS permissions, so SMS will not
+        // work even if a user was allowed to select it.
         otp: true,
         sms: true
       },
