@@ -12,16 +12,19 @@
     "cdk": "cdk"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.14",
-    "@types/node": "22.7.9",
-    "jest": "^29.7.0",
-    "ts-jest": "^29.2.5",
+    "@types/jest": "^29.5",
+    "@types/node": "^22.7.9",
+    "jest": "^29.7",
+    "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2",
-    "typescript": "~5.6.3"
+    "typescript": "~5.8.3"
   },
   "dependencies": {
-    "aws-cdk": "~2.1031.1",
-    "aws-cdk-lib": "~2.221",
+    "aws-cdk": "^2.1031.2",
+    "aws-cdk-lib": "^2.224",
     "constructs": "^10.4.2"
+  },
+  "overrides": {
+    "js-yaml": "^4.1.1"
   }
 }
