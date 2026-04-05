@@ -14,15 +14,15 @@
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "@types/node": "^22.7.9",
-    "jest": "^30.2.0",
-    "ts-jest": "^29.4.6",
+    "jest": "^30.3.0",
+    "ts-jest": "^29.4.7",
     "ts-node": "^10.9.2",
     "typescript": "~5.9.3"
   },
   "dependencies": {
-    "aws-cdk": "^2.1108.0",
-    "aws-cdk-lib": "~2.241",
-    "constructs": "^10.4.2"
+    "aws-cdk": "^2.1117.0",
+    "aws-cdk-lib": "~2.248",
+    "constructs": "^10.6.0"
   },
   "overrides": {
     "js-yaml": "^4.1.1"

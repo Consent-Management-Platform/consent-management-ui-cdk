@@ -54,6 +54,7 @@ If the changes are as you expect, run `npm test -- -u` to update the snapshots.
 ## Useful commands
 
 * `npm install`     install local package dependencies
+* `npm update`      update package dependencies
 * `npm run clean`   clear generated build artifacts such as cdk.out and node_modules
 * `npm run watch`   watch for changes and compile
 * `npm test`        compile to js and run jest unit tests
