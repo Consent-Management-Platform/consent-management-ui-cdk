@@ -20,8 +20,8 @@
     "typescript": "~5.9.3"
   },
   "dependencies": {
-    "aws-cdk": "^2.1117.0",
-    "aws-cdk-lib": "~2.248",
+    "aws-cdk-lib": "~2.254",
+    "aws-cdk": "^2.1122",
     "constructs": "^10.6.0"
   },
   "overrides": {
